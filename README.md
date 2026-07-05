@@ -3,10 +3,10 @@
 
 
 ![CI](https://github.com/jefersonbraine/emolumentos-pr/actions/workflows/ci.yml/badge.svg)
+![PyPI](https://img.shields.io/pypi/v/emolumentos-pr.svg)
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue.svg)
 ![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)
 ![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)
-<!-- ![PyPI](https://img.shields.io/pypi/v/emolumentos-pr.svg) -->
 
 Biblioteca Python para cálculo de **emolumentos de cartório do Paraná**, indexados
 por **VRCext**, conforme a **Lei Estadual PR nº 21.869/2023** (FUNREJUS).
