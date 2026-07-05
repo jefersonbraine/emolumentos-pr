@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="docs/assets/Banner - emolumentos-pr.png" alt="Emolumentos PR Banner" width="1920" />
+  <img src="https://raw.githubusercontent.com/jefersonbraine/emolumentos-pr/main/docs/assets/Banner%20-%20emolumentos-pr.png" alt="Emolumentos PR Banner" width="1920" />
 
 
 ![CI](https://github.com/jefersonbraine/emolumentos-pr/actions/workflows/ci.yml/badge.svg)
