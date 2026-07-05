@@ -1,0 +1,48 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "emolumentos-pr"
+version = "0.1.0"
+description = "Cálculo de emolumentos de cartório do Paraná (FUNREJUS/VRCext), conforme Lei Estadual 21.869/2023."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Jeferson Braine Leal" }]
+keywords = ["cartorio", "emolumentos", "funrejus", "vrcext", "parana", "notarial"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Legal Industry",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Natural Language :: Portuguese (Brazilian)",
+    "Typing :: Typed",
+]
+# Núcleo ZERO-DEPENDÊNCIA: só biblioteca padrão. É um recurso, não um acaso.
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[project.scripts]
+emolpr = "emolumentos_pr.cli:main"
+
+[project.urls]
+Repository = "https://github.com/jefersonbraine/emolumentos-pr"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/emolumentos_pr"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# E/F = pyflakes+pycodestyle, I = import sorting, UP = pyupgrade, B = bugbear.
+select = ["E", "F", "I", "UP", "B"]

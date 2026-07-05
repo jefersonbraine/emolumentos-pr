@@ -8,6 +8,7 @@ import pytest
 
 from emolumentos_pr.modelos import Faixa, TabelaEmolumentos, TipoAto
 
+
 @pytest.fixture
 def tabela_sintetica() -> TabelaEmolumentos:
     # Faixas simples e redondas: os testes de mecânica não dependem da lei real.
@@ -19,6 +20,7 @@ def tabela_sintetica() -> TabelaEmolumentos:
             Faixa(Decimal("5000.01"), None, Decimal("300")),
         ),
     )
+
 
 @pytest.fixture
 def vrcext() -> Decimal:
