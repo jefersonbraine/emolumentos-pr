@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 class EmolumentoError(Exception):
     """Base de todos os erros da biblioteca."""
 
+
 class ValorForaDaTabela(EmolumentoError):
     """Nenhuma faixa da tabela cobre o valor informado."""
 

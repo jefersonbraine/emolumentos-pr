@@ -1,7 +1,6 @@
 """emolumentos-pr — cálculo de emolumentos de cartório do Paraná (FUNREJUS/VRCext)."""
 
 from __future__ import annotations
-from decimal import __version__
 
 from .calculo import calcular
 from .erros import EmolumentoError, ValorForaDaTabela
