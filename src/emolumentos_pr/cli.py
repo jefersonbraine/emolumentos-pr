@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import argparse
-from decimal import Decimal, InvalidOperation
 
 from .calculo import calcular
-from .erros import EmolumentoError
+from .erros import EmolumentoError, ValorInvalido
+from .formatacao import parse_valor
 from .modelos import Ato, TipoAto
 
 
@@ -49,9 +49,9 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     try:
-        objetos = tuple(Decimal(v) for v in args.valor)
-    except InvalidOperation:
-        parser.error(f"Valor inválido em: {args.valor!r}")
+        objetos = tuple(parse_valor(v) for v in args.valor)
+    except ValorInvalido as exec:
+        parser.error(str(exec))
 
     ato = Ato(
         tipo=TipoAto(args.tipo),
