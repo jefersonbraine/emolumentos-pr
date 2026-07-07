@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from .calculo import calcular
-from .erros import EmolumentoError, ValorForaDaTabela
+from .erros import EmolumentoError, ValorForaDaTabela, ValorInvalido
+from .formatacao import formatar_brl, parse_valor, resultado_para_dict
 from .modelos import (
     Ato,
     Componente,
@@ -24,6 +25,10 @@ __all__ = [
     "TabelaEmolumentos",
     "TipoAto",
     "ValorForaDaTabela",
+    "ValorInvalido",
     "calcular",
+    "formatar_brl",
+    "parse_valor",
+    "resultado_para_dict",
     "__version__",
 ]
