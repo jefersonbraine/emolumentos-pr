@@ -28,3 +28,10 @@ class ValorForaDaTabela(EmolumentoError):
             f"Valor {valor} não se enquadra em nenhuma faixa da tabela de "
             f"'{tipo.value}'. Verifique se a última faixa cobre 'em diante'."
         )
+
+class ValorInvalido(EmolumentoError):
+     """A entrada não pôde ser convertida num valor monetário válido.
+
+    Usada pelo parsing de entrada (formatacao.parse_valor): texto não numérico,
+    vazio, ou valor negativo.
+    """
