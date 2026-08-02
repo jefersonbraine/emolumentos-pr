@@ -67,12 +67,10 @@ def _faixas_com_valor() -> tuple[Faixa, ...]:
 _FAIXAS = _faixas_com_valor()
 COMPRA_E_VENDA = TabelaEmolumentos(tipo=TipoAto.COMPRA_E_VENDA, faixas=_FAIXAS)
 DOACAO = TabelaEmolumentos(tipo=TipoAto.DOACAO, faixas=_FAIXAS)
-PARTILHA = TabelaEmolumentos(tipo=TipoAto.PARTILHA, faixas=_FAIXAS)
 
 TABELAS: dict[TipoAto, TabelaEmolumentos] = {
     TipoAto.COMPRA_E_VENDA: COMPRA_E_VENDA,
     TipoAto.DOACAO: DOACAO,
-    TipoAto.PARTILHA: PARTILHA,
 }
 
 

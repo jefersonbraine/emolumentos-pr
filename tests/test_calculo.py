@@ -42,9 +42,10 @@ def test_funrejus_com_valor_e_02pct(tabela_sintetica, vrcext):
     assert _por_nome(r, "Funrejus") == D("6.00")  # 0,2% de 3000
 
 
-def test_multiobjeto_soma_por_objeto_e_selo_por_traslado(tabela_sintetica, vrcext):
+def test_multiobjeto_aplica_100_80_e_selo_por_traslado(tabela_sintetica, vrcext):
     r = calcular(_ato("3000", "3000"), tabela_sintetica, vrcext)
-    assert _por_nome(r, "Emolumentos") == D("400.00")        # 200 + 200
+    # 1º objeto 100% (200), 2º objeto 80% (200 * 0.8 = 160)
+    assert _por_nome(r, "Emolumentos") == D("360.00")
     assert _por_nome(r, "Selo") == D("24.00")                # 8 + 8*2
     assert _por_nome(r, "Distribuidor") == D("12.45")        # uma vez
 

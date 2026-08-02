@@ -47,26 +47,31 @@ def calcular(
     vrcext: Decimal = VRCEXT_ATUAL,
 ) -> ResultadoCalculo:
     """Calcula o resultado detalhado de um ato, com breakdown auditável."""
-    if ato.tipo is TipoAto.PARTILHA:
-        return _calcular_partilha(ato, tabela or t.tabela_de(ato.tipo), vrcext)
     if ato.tipo.tem_valor:
         return _calcular_com_valor(ato, tabela or t.tabela_de(ato.tipo), vrcext)
     return _calcular_sem_valor(ato, vrcext)
 
 
 def _calcular_com_valor(ato: Ato, tabela: TabelaEmolumentos, vrcext: Decimal) -> ResultadoCalculo:
-    emolumento = sum((_emolumento_objeto(v, tabela, vrcext) for v in ato.objetos), Decimal("0"))
-    funrejus = sum(
-        (_funrejus_com_valor(v, usufruto=ato.usufruto) for v in ato.objetos), Decimal("0")
-    )
-    n_obj = len(ato.objetos)
+    """Compra e venda / doação. Com 2+ objetos, aplica o item X.b da Tabela XI
+    automaticamente: o bem de maior valor paga emolumento integral (100%),
+    cada bem adicional paga 80% — sem exceção, sem opção de desligar (reflete
+    o comportamento confirmado do sistema oficial). Máximo 9 adicionais.
+    """
+    ordenados = sorted(ato.objetos, reverse=True)[: 1 + t.MAX_UNIDADES_ADICIONAIS]
+
+    emolumento = Decimal("0")
+    funrejus = Decimal("0")
+    for i, valor in enumerate(ordenados):
+        cheio = _emolumento_objeto(valor, tabela, vrcext)
+        emolumento += cheio if i == 0 else cheio * t.PERC_UNIDADE_ADICIONAL
+        funrejus += _funrejus_com_valor(valor, usufruto=ato.usufruto)
+
+    n_obj = len(ordenados)
     selo = t.SELO_ESCRITURA + t.SELO_TRASLADO * n_obj
 
     componentes = _montar(
-        emolumento=emolumento,
-        funrejus=funrejus,
-        selo=selo,
-        distribuidor=t.DISTRIBUIDOR,
+        emolumento=emolumento, funrejus=funrejus, selo=selo, distribuidor=t.DISTRIBUIDOR
     )
     return _finalizar(ato, componentes)
 
@@ -88,33 +93,6 @@ def _calcular_sem_valor(ato: Ato, vrcext: Decimal) -> ResultadoCalculo:
         funrejus=funrejus,
         selo=selo,
         distribuidor=distribuidor,
-    )
-    return _finalizar(ato, componentes)
-
-def _calcular_partilha(ato: Ato, tabela: TabelaEmolumentos, vrcext: Decimal) -> ResultadoCalculo:
-    """Partilha (inventário/divórcio): bem de maior valor a 100%, demais a 80%.
-
-    Item X.b da Tabela XI. Só o Emolumento é reduzido — Funrejus, FUNDEP e ISSQN
-    seguem cheios sobre cada bem (confirmado com exemplo real do sistema).
-    Máximo de 9 bens adicionais (MAX_UNIDADES_ADICIONAIS).
-    """
-    ordenados = sorted(ato.objetos, reverse=True)[: 1 + t.MAX_UNIDADES_ADICIONAIS]
-
-    emolumento_total = Decimal("0")
-    funrejus_total = Decimal("0")
-    for i, valor in enumerate(ordenados):
-        cheio = _emolumento_objeto(valor, tabela, vrcext)
-        emolumento_total += cheio if i == 0 else cheio * t.PERC_UNIDADE_ADICIONAL
-        funrejus_total += _funrejus_com_valor(valor, usufruto=False)  # partilha não tem usufruto
-
-    n_obj = len(ordenados)
-    selo = t.SELO_ESCRITURA + t.SELO_TRASLADO * n_obj
-
-    componentes = _montar(
-        emolumento=emolumento_total,
-        funrejus=funrejus_total,
-        selo=selo,
-        distribuidor=t.DISTRIBUIDOR,
     )
     return _finalizar(ato, componentes)
 

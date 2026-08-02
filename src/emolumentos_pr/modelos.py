@@ -26,12 +26,11 @@ class TipoAto(StrEnum):
     DOACAO = "doacao"
     SEM_VALOR = "sem_valor"
     PROCURACAO = "procuracao"
-    PARTILHA = "partilha"
     
 
     @property
     def tem_valor(self) -> bool:
-        return self in (TipoAto.COMPRA_E_VENDA, TipoAto.DOACAO, TipoAto.PARTILHA)
+        return self in (TipoAto.COMPRA_E_VENDA, TipoAto.DOACAO)
 
 
 @dataclass(frozen=True, slots=True)

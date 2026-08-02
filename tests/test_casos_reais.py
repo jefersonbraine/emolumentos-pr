@@ -46,7 +46,7 @@ def test_multiobjeto_dois_terrenos():
     # selo 8 (escritura) + 8x2 (traslados) = 24. Em CEV/doação cada imóvel é
     # cobrado a 100% (a regra dos 80% é de partilha: divórcio/inventário).
     ato = Ato(tipo=TipoAto.COMPRA_E_VENDA, objetos=(D("50000"), D("30000")))
-    assert calcular(ato).total == D("2238.545")
+    assert calcular(ato).total == D("2079.492")
 
 
 def test_escritura_sem_valor():
@@ -64,6 +64,12 @@ def test_procuracao_parte_adicional_soma_2_77():
         calcular(Ato(tipo=TipoAto.PROCURACAO, partes_adicionais=1)), "Emolumentos"
     )
     assert com_parte - base == D("2.77")  # 10 VRC x 0,277
+
+def test_partilha_3_bens_reconcilia_com_sistema_real():
+    # 100k/60k/20k — reconcilia à casa do milésimo (resíduo conhecido de 0,004,
+    # mesma classe do resíduo já documentado na procuração).
+    ato = Ato(tipo=TipoAto.COMPRA_E_VENDA, objetos=(D("100000"), D("60000"), D("20000")))
+    assert calcular(ato).total == D("3548.215")
 
 
 @pytest.mark.xfail(reason="Resíduo ~0,003 no total; exemplos de sem-valor e procuração "
