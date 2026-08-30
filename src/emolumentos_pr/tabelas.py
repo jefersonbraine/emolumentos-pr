@@ -13,9 +13,8 @@ from __future__ import annotations
 
 from decimal import Decimal
 
-from .upf_pr import UPF_PR_ATUAL
-
 from .modelos import Faixa, TabelaEmolumentos, TipoAto
+from .upf_pr import UPF_PR_ATUAL
 
 # --- Constantes (Tabela XI) -------------------------------------------------
 ALIQUOTA_FUNREJUS = Decimal("0.002")        # atos com valor: 0,2% do valor
