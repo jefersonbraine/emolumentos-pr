@@ -7,6 +7,7 @@ from decimal import Decimal
 import pytest
 
 from emolumentos_pr import Ato, TipoAto, calcular
+from emolumentos_pr.erros import EmolumentoError
 
 D = Decimal
 
@@ -70,6 +71,22 @@ def test_partilha_3_bens_reconcilia_com_sistema_real():
     # mesma classe do resíduo já documentado na procuração).
     ato = Ato(tipo=TipoAto.COMPRA_E_VENDA, objetos=(D("100000"), D("60000"), D("20000")))
     assert calcular(ato).total == D("3548.215")
+
+def test_doacao_com_usufruto_dois_atos():
+    # Sistema oficial do cartório, 30/08/2026, doação de R$ 100.000,00.
+    ato = Ato(tipo=TipoAto.DOACAO, objetos=(D("100000"),), usufruto=True)
+    r = calcular(ato)
+    assert _por_nome(r, "Emolumentos") == D("2266.96")
+    assert _por_nome(r, "Funrejus") == D("400.000")
+    assert _por_nome(r, "Selo") == D("24.00")
+    assert _por_nome(r, "Distribuidor") == D("12.45")
+
+
+def test_doacao_usufruto_multiplos_bens_levanta_erro():
+    # Limitação conhecida — sem regra confirmada ainda.
+    ato = Ato(tipo=TipoAto.DOACAO, objetos=(D("50000"), D("50000")), usufruto=True)
+    with pytest.raises(EmolumentoError):
+        calcular(ato)
 
 
 @pytest.mark.xfail(reason="Resíduo ~0,003 no total; exemplos de sem-valor e procuração "
