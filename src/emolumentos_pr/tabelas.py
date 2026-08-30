@@ -13,6 +13,8 @@ from __future__ import annotations
 
 from decimal import Decimal
 
+from .upf_pr import UPF_PR_ATUAL
+
 from .modelos import Faixa, TabelaEmolumentos, TipoAto
 
 # --- Constantes (Tabela XI) -------------------------------------------------
@@ -81,3 +83,8 @@ def tabela_de(tipo: TipoAto) -> TabelaEmolumentos:
         raise NotImplementedError(
             f"'{tipo.value}' não usa tabela de faixas."
         ) from None
+
+# Valor do teto do funrejus
+
+MULTIPLICADOR_TETO_FUNREJUS = Decimal("53") # Lei 21.180/2022
+TETO_FUNREJUS = (UPF_PR_ATUAL * MULTIPLICADOR_TETO_FUNREJUS).quantize(Decimal("0.01"))

@@ -60,3 +60,10 @@ def test_usufruto_dobra_funrejus(tabela_sintetica, vrcext):
     doa = Ato(tipo=TipoAto.DOACAO, objetos=(D("3000"),), usufruto=True)
     r = calcular(doa, tabela_sintetica, vrcext)
     assert _por_nome(r, "Funrejus") == _por_nome(base, "Funrejus") * 2
+
+def test_funrejus_teto_boleto_real_tjpr():
+    # Boleto oficial TJPR (Tabelionato de Cerro Azul), 17/08/2026.
+    # Fórmula: 53 UPF/PR (Lei 21.180/2022) — confirma R$ 8.089,39.
+    ato = Ato(tipo=TipoAto.COMPRA_E_VENDA, objetos=(D("4520000"),))
+    r = calcular(ato)
+    assert _por_nome(r, "Funrejus") == D("8089.39")
