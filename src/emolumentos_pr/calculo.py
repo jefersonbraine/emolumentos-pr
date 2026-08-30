@@ -13,6 +13,8 @@ from __future__ import annotations
 
 from decimal import ROUND_DOWN, ROUND_HALF_UP, Decimal
 
+from emolumentos_pr.erros import EmolumentoError
+
 from . import tabelas as t
 from .modelos import Ato, Componente, ResultadoCalculo, TabelaEmolumentos, TipoAto
 from .vrcext import VRCEXT_ATUAL
@@ -47,6 +49,8 @@ def calcular(
     vrcext: Decimal = VRCEXT_ATUAL,
 ) -> ResultadoCalculo:
     """Calcula o resultado detalhado de um ato, com breakdown auditável."""
+    if ato.tipo is TipoAto.DOACAO and ato.usufruto:
+        return _calcular_doacao_usufruto(ato, tabela or t.tabela_de(ato.tipo), vrcext)
     if ato.tipo.tem_valor:
         return _calcular_com_valor(ato, tabela or t.tabela_de(ato.tipo), vrcext)
     return _calcular_sem_valor(ato, vrcext)
@@ -96,6 +100,57 @@ def _calcular_sem_valor(ato: Ato, vrcext: Decimal) -> ResultadoCalculo:
     )
     return _finalizar(ato, componentes)
 
+def _calcular_doacao_usufruto(
+        ato: Ato, 
+        tabela: TabelaEmolumentos, 
+        vrcext: Decimal
+        ) -> ResultadoCalculo:
+    """Doação com reserva de usufruto: dois atos jurídicos distintos dentro
+    da mesma escritura (nua-propriedade + instituição de usufruto), desde a
+    revogação do Ofício-Circular 35/2008 pelo Despacho 13298386-CJ.
+
+    Cada ato cobra Emolumento sobre METADE do valor declarado; Funrejus é
+    calculado sobre o valor TOTAL em cada ato (a soma equivale ao "Funrejus
+    dobrado" do regime anterior); FUNDEP/ISSQN seguem o Emolumento de cada
+    ato; Selo conta 1 escritura + 1 traslado por ato; Distribuidor é
+    cobrado uma única vez.
+
+    Reconciliado contra o sistema oficial do cartório em 30/08/2026, doação
+    de R$ 100.000,00: Emolumentos 2.266,96 | Funrejus 400,00 | Selo 24,00 |
+    Distribuidor 12,45 | FUNDEP/ISSQN 113,34 cada | Total 2.930,09
+    (resíduo de milésimo, mesma classe do já documentado na procuração e
+    na partilha).
+
+    LIMITAÇÃO CONHECIDA: cobre só doação de um único bem, com usufruto
+    sobre a integralidade dele. NÃO cobre (falta regra confirmada e caso
+    real): múltiplos bens com usufruto simultâneo, usufruto parcial de um
+    bem, ou combinação com a regra 100%/80% de partilha. Chamar esta
+    função com mais de um objeto levanta erro de propósito.
+    """
+    if len(ato.objetos) != 1:
+        raise EmolumentoError(
+            "Doação com usufruto e múltiplos bens ainda não tem regra "
+            "confirmada nesta biblioteca — informe um único objeto."
+        )
+
+    valor_total = ato.objetos[0]
+    metade = valor_total / 2
+
+    emol_ato = _emolumento_objeto(metade, tabela, vrcext)
+    funrejus_ato = _funrejus_com_valor(valor_total, usufruto=False)  # Funrejus é sobre o total
+
+    emolumento_total = emol_ato * 2  # dois atos jurídicos distintos
+    funrejus_total = funrejus_ato * 2  # dois atos jurídicos distintos
+    selo_total = t.SELO_ESCRITURA + t.SELO_TRASLADO * 2  # dois atos jurídicos distintos
+
+    componentes = _montar(
+        emolumento=emolumento_total,
+        funrejus=funrejus_total,
+        selo=selo_total,
+        distribuidor=t.DISTRIBUIDOR
+    )
+    return _finalizar(ato, componentes)
+ 
 
 def _montar(
     *, emolumento: Decimal, funrejus: Decimal, selo: Decimal, distribuidor: Decimal
